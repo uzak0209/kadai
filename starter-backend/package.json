@@ -1,0 +1,33 @@
+{
+  "name": "hono-todo-api",
+  "version": "1.0.0",
+  "description": "Honoを使用したToDoアプリケーションAPI課題",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "migrate": "npx tsx src/db/migrate.ts",
+    "seed": "npx tsx src/db/seed.ts",
+    "swagger": "npx @redocly/cli preview-docs docs/openapi.yaml"
+  },
+  "keywords": ["hono", "todo", "api", "postgresql"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@hono/zod-validator": "^0.4.1",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
+    "hono": "^4.7.10",
+    "pg": "^8.13.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^22.10.5",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

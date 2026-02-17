@@ -1,0 +1,104 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: todo_postgres
+    environment:
+      POSTGRES_USER: todouser
+      POSTGRES_PASSWORD: todopass
+      POSTGRES_DB: todo_app
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todouser"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - todo-network
+
+  # Swagger UI (共通API仕様書)
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    container_name: todo_swagger
+    ports:
+      - "8080:8080"
+    environment:
+      SWAGGER_JSON: /docs/openapi.yaml
+    volumes:
+      - ./shared/docs:/docs
+    networks:
+      - todo-network
+
+  # Answer Backend (完成版バックエンド)
+  answer-backend:
+    build: ./answer-backend
+    container_name: todo_answer_backend
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://todouser:todopass@db:5432/todo_app
+      JWT_SECRET: your-secret-key-change-this-in-production
+      PORT: 3000
+      NODE_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./answer-backend/src:/app/src
+      - ./answer-backend/docs:/app/docs
+      - ./answer-backend/tsconfig.json:/app/tsconfig.json
+    networks:
+      - todo-network
+
+  # Starter Backend (未完成バックエンド - 課題用)
+  starter-backend:
+    build: ./starter-backend
+    container_name: todo_starter_backend
+    ports:
+      - "3010:3000"
+    environment:
+      DATABASE_URL: postgresql://todouser:todopass@db:5432/todo_app
+      JWT_SECRET: your-secret-key-change-this-in-production
+      PORT: 3000
+      NODE_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./starter-backend/src:/app/src
+      - ./starter-backend/docs:/app/docs
+      - ./starter-backend/tsconfig.json:/app/tsconfig.json
+    networks:
+      - todo-network
+
+  # Answer Frontend (完成版フロントエンド)
+  answer-frontend:
+    build: ./answer-frontend
+    container_name: todo_answer_frontend
+    ports:
+      - "3002:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3000/api
+    networks:
+      - todo-network
+
+  # Starter Frontend (未完成フロントエンド - 課題用)
+  starter-frontend:
+    build: ./starter-frontend
+    container_name: todo_starter_frontend
+    ports:
+      - "3001:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3010/api
+    networks:
+      - todo-network
+
+volumes:
+  postgres_data:
+
+networks:
+  todo-network:
+    driver: bridge
