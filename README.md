@@ -88,13 +88,12 @@ make up
 
 2. **課題に取り組む**
    ```bash
-   make up-starter
+   make 
    ```
-   - `starter-backend/src/`配下のファイルを編集
-   - TODOコメントに従って実装
-   - http://localhost:3010 でAPIをテスト
+   makeコマンドをすると起動するサーバーを選択できる。
+   例:フロントエンド課題をしたいならバックエンドは完成版、フロントエンドは課題はstarterを選択。
 
-3. **詳細な手順**
+4. **詳細な手順**
    - `starter-backend/README.md`を参照
 
 ### フロントエンド開発課題の場合
