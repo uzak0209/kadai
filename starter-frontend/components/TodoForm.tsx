@@ -1,10 +1,20 @@
+// TODO: 課題4 - 再利用可能なコンポーネントの設計を学ぶ
+// このコンポーネントは「作成」と「編集」の両方で使われます
+// - todo propsがあれば編集モード
+// - todo propsがなければ作成モード
+// これがコンポーネントの再利用性です！
+
 'use client'
 
 import { useState, useEffect } from 'react'
 import { Todo } from '@/types/todo'
 
+// TODO: 課題4 - Props設計を確認してください
+// - todo?: 編集時のみ渡される（オプショナル）
+// - onSubmit: フォーム送信時のコールバック
+// - onCancel: キャンセル時のコールバック
 interface TodoFormProps {
-  todo?: Todo | null
+  todo?: Todo
   onSubmit: (title: string, description: string, completed: boolean) => void
   onCancel: () => void
 }
@@ -14,6 +24,8 @@ export default function TodoForm({ todo, onSubmit, onCancel }: TodoFormProps) {
   const [description, setDescription] = useState('')
   const [completed, setCompleted] = useState(false)
 
+  // TODO: 課題4 - useEffectで初期値を設定
+  // todoが変わったら、フォームの値を更新する
   useEffect(() => {
     if (todo) {
       setTitle(todo.title)

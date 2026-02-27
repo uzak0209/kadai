@@ -14,29 +14,25 @@ export default function LoginPage() {
   const router = useRouter()
   const { login } = useAuth()
 
+  // TODO: 課題1 & 課題3 - ログイン処理を実装してください
+  // ヒント:
+  // 1. fetch()でPOSTリクエストを送信
+  //    - URL: `${API_BASE_URL}/auth/login`
+  //    - headers: { 'Content-Type': 'application/json' }
+  //    - body: JSON.stringify({ email, password })
+  // 2. レスポンスをJSONでパース
+  // 3. エラーチェック: !response.okならエラーをthrow
+  // 4. login(data.token)でトークンを保存
+  // 5. router.push('/todos')でTodoページにリダイレクト
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to login')
-      }
-
-      // Save token and redirect
-      login(data.token)
-      router.push('/todos')
+      // ここに実装してください
+      console.log('Login attempt:', email, password)
+      throw new Error('Login not implemented yet')
     } catch (err: any) {
       setError(err.message || 'Failed to login')
     } finally {

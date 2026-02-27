@@ -9,6 +9,13 @@ import TodoForm from '@/components/TodoForm'
 import { fetchWithAuth } from '@/lib/api'
 
 export default function TodosPage() {
+  // TODO: 課題2 - useStateで状態を定義してください
+  // ヒント:
+  // 1. todos: Todo[] - Todoの配列
+  // 2. loading: boolean - ローディング状態
+  // 3. error: string - エラーメッセージ
+  // 4. showForm: boolean - フォーム表示フラグ
+  // 5. editingTodo: Todo | null - 編集中のTodo
   const [todos, setTodos] = useState<Todo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -17,21 +24,15 @@ export default function TodosPage() {
   const { user, logout } = useAuth()
   const router = useRouter()
 
+  // TODO: 課題2 - fetchTodos関数を実装してください
+  // ヒント:
+  // 1. fetchWithAuth('/todos')でTodoを取得
+  // 2. setTodos(data)で状態を更新
+  // 3. setLoading(false)でローディング終了
+  // 4. エラーハンドリングを忘れずに
   const fetchTodos = useCallback(async () => {
-    try {
-      const data = await fetchWithAuth('/todos')
-      setTodos(data)
-      setLoading(false)
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch todos')
-      setLoading(false)
-
-      // If unauthorized, redirect to login
-      if (err.message?.includes('Unauthorized') || err.message?.includes('401')) {
-        logout()
-        router.push('/login')
-      }
-    }
+    console.log('fetchTodos not implemented')
+    setLoading(false)
   }, [logout, router])
 
   useEffect(() => {
@@ -43,73 +44,41 @@ export default function TodosPage() {
     fetchTodos()
   }, [user, router, fetchTodos])
 
+  // TODO: 課題2 - handleCreateTodo関数を実装してください
+  // ヒント:
+  // 1. fetchWithAuth('/todos', { method: 'POST', ... })でTodoを作成
+  // 2. setTodos([...todos, newTodo])で配列に追加（イミュータブルな更新！）
+  // 3. setShowForm(false)でフォームを閉じる
   const handleCreateTodo = async (title: string, description: string) => {
-    try {
-      const newTodo = await fetchWithAuth('/todos', {
-        method: 'POST',
-        body: JSON.stringify({ title, description }),
-      })
-
-      setTodos([...todos, newTodo])
-      setShowForm(false)
-      setError('')
-    } catch (err: any) {
-      setError(err.message || 'Failed to create todo')
-    }
+    console.log('handleCreateTodo not implemented', title, description)
   }
 
-  const handleUpdateTodo = async (id: string, title: string, description: string, completed: boolean) => {
-    try {
-      const updatedTodo = await fetchWithAuth(`/todos/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify({ title, description, completed }),
-      })
-
-      setTodos(todos.map((todo) => (todo.id === id ? updatedTodo : todo)))
-      setEditingTodo(null)
-      setShowForm(false)
-      setError('')
-    } catch (err: any) {
-      setError(err.message || 'Failed to update todo')
-    }
+  // TODO: 課題2 - handleUpdateTodo関数を実装してください
+  // ヒント:
+  // 1. fetchWithAuth(`/todos/${id}`, { method: 'PUT', ... })でTodoを更新
+  // 2. setTodos(todos.map(...))で配列を更新（イミュータブルな更新！）
+  // 3. 該当するidのTodoだけを置き換える
+  const handleUpdateTodo = async (id: number, title: string, description: string, completed: boolean) => {
+    console.log('handleUpdateTodo not implemented', id, title, description, completed)
   }
 
-  const handleDeleteTodo = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this todo?')) {
-      return
-    }
-
-    try {
-      await fetchWithAuth(`/todos/${id}`, {
-        method: 'DELETE',
-      })
-
-      setTodos(todos.filter((todo) => todo.id !== id))
-      setError('')
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete todo')
-    }
+  // TODO: 課題2 - handleDeleteTodo関数を実装してください
+  // ヒント:
+  // 1. confirmで確認ダイアログを表示
+  // 2. fetchWithAuth(`/todos/${id}`, { method: 'DELETE' })で削除
+  // 3. setTodos(todos.filter(...))で配列から削除（イミュータブルな更新！）
+  const handleDeleteTodo = async (id: number) => {
+    console.log('handleDeleteTodo not implemented', id)
   }
 
-  const handleToggleComplete = async (id: string, completed: boolean) => {
-    const todo = todos.find((t) => t.id === id)
-    if (!todo) return
-
-    try {
-      const updatedTodo = await fetchWithAuth(`/todos/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          title: todo.title,
-          description: todo.description,
-          completed,
-        }),
-      })
-
-      setTodos(todos.map((t) => (t.id === id ? updatedTodo : t)))
-      setError('')
-    } catch (err: any) {
-      setError(err.message || 'Failed to toggle todo')
-    }
+  // TODO: 課題2 - handleToggleComplete関数を実装してください
+  // ヒント:
+  // 1. todos.find()で該当するTodoを見つける
+  // 2. fetchWithAuth(`/todos/${id}`, { method: 'PUT', ... })で更新
+  // 3. completedだけ変更、title/descriptionは元のまま
+  // 4. setTodos(todos.map(...))で配列を更新
+  const handleToggleComplete = async (id: number, completed: boolean) => {
+    console.log('handleToggleComplete not implemented', id, completed)
   }
 
   const handleLogout = () => {
@@ -163,7 +132,7 @@ export default function TodosPage() {
           {showForm && (
             <div className="mt-4">
               <TodoForm
-                todo={editingTodo}
+                todo={editingTodo || undefined}
                 onSubmit={(title, description, completed) => {
                   if (editingTodo) {
                     handleUpdateTodo(editingTodo.id, title, description, completed)

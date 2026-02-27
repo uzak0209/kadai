@@ -26,15 +26,17 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      // TODO: Implement registration logic
-      // 1. Make a POST request to http://localhost:3000/api/auth/register
-      // 2. Send name, email, and password in the request body
-      // 3. On success, redirect to /login
-      // 4. On error, set the error message
+      // TODO: 課題1 - 登録処理を実装してください
+      // ヒント:
+      // 1. fetch()でPOSTリクエストを送信
+      //    - URL: `http://localhost:3000/api/auth/register`
+      //    - headers: { 'Content-Type': 'application/json' }
+      //    - body: JSON.stringify({ name, email, password })
+      // 2. レスポンスをJSONでパース
+      // 3. エラーチェック: !response.okならエラーをthrow
+      // 4. 成功したら router.push('/login') でログインページへ
 
       console.log('Register attempt:', { name, email, password })
-
-      // Placeholder - Remove this and implement actual registration
       throw new Error('Registration not implemented yet')
 
     } catch (err: any) {

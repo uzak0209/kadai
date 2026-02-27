@@ -1,12 +1,23 @@
+// TODO: 課題4 - Presentational Componentの設計を学ぶ
+// このコンポーネントは「見た目」だけを担当します
+// - 状態を持たない（propsで受け取る）
+// - ビジネスロジックを持たない
+// - 再利用しやすい設計
+
 'use client'
 
 import { Todo } from '@/types/todo'
 
+// TODO: 課題4 - Props型定義を確認してください
+// - todo: 表示するTodoオブジェクト
+// - onToggleComplete: チェックボックスを切り替えた時のコールバック
+// - onEdit: 編集ボタンを押した時のコールバック
+// - onDelete: 削除ボタンを押した時のコールバック
 interface TodoItemProps {
   todo: Todo
-  onToggleComplete: (id: string, completed: boolean) => void
+  onToggleComplete: (id: number, completed: boolean) => void
   onEdit: (todo: Todo) => void
-  onDelete: (id: string) => void
+  onDelete: (id: number) => void
 }
 
 export default function TodoItem({ todo, onToggleComplete, onEdit, onDelete }: TodoItemProps) {
@@ -30,7 +41,7 @@ export default function TodoItem({ todo, onToggleComplete, onEdit, onDelete }: T
             </p>
           )}
           <p className="text-xs text-gray-400 mt-2">
-            Created: {new Date(todo.createdAt).toLocaleDateString()}
+            Created: {new Date(todo.created_at).toLocaleDateString()}
           </p>
         </div>
 
