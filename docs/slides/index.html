@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web開発基礎講座</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+    <style>
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-transform: none;
+        }
+        .reveal .highlight {
+            color: #42affa;
+            font-weight: bold;
+        }
+        .reveal .box {
+            border: 3px solid #42affa;
+            padding: 20px;
+            margin: 10px auto;
+            border-radius: 10px;
+            max-width: 800px;
+        }
+        .reveal .small-text {
+            font-size: 0.8em;
+        }
+        .reveal code {
+            background: #3f3f3f;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .reveal pre code {
+            max-height: 500px;
+        }
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 550px;
+            overflow: auto;
+        }
+        .mermaid svg {
+            max-height: 500px;
+        }
+        .reveal .two-columns {
+            display: flex;
+            gap: 20px;
+        }
+        .reveal .two-columns > div {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- タイトル -->
+            <section>
+                <h1>Web開発基礎講座</h1>
+                <h3>超初心者向け</h3>
+                <p>ToDoアプリ開発を通じて学ぶ</p>
+            </section>
+
+            <!-- 目次 -->
+            <section>
+                <h2>本日の内容</h2>
+                <ul>
+                    <li>Node.js とは</li>
+                    <li>React とは</li>
+                    <li>Next.js とは</li>
+                    <li>Hono とは</li>
+                    <li>データベース(PostgreSQL)とは</li>
+                    <li>JWT認証とは</li>
+                    <li>TypeScript の特徴</li>
+                    <li>Docker とは</li>
+                    <li>Git とは</li>
+                </ul>
+            </section>
+
+            <!-- 全体像 -->
+            <section>
+                <h2>Webアプリケーションの全体像</h2>
+                <div class="mermaid">
+                    <pre>
+graph LR
+    A[ブラウザ<br/>フロントエンド] -->|HTTP リクエスト| B[サーバー<br/>バックエンド]
+    B -->|SQL クエリ| C[データベース<br/>DB]
+    C -->|データ| B
+    B -->|レスポンス| A
+
+    style A fill:#e1f5ff
+    style B fill:#fff4e1
+    style C fill:#ffe1f5
+                    </pre>
+                </div>
+            </section>
+
+            <!-- Node.js -->
+            <section>
+                <h2>Node.js とは？</h2>
+                <p><span class="highlight">JavaScriptをブラウザの外で実行できる環境</span></p>
+                <div class="fragment">
+                    <p class="small-text">従来: JavaScript = ブラウザでのみ動く</p>
+                    <p class="small-text">Node.js: JavaScript = サーバーでも動く！</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>Node.js の役割</h2>
+                <div class="box">
+                    <p><strong>サーバーサイドでJavaScriptを実行</strong></p>
+                    <ul style="text-align: left;">
+                        <li>Webサーバーを立ち上げる</li>
+                        <li>ファイルを読み書きする</li>
+                        <li>データベースにアクセスする</li>
+                        <li>APIサーバーを作る</li>
+                    </ul>
+                </div>
+                <p class="fragment small-text">このプロジェクトでは、Next.jsもHonoもNode.js上で動いている</p>
+            </section>
+
+            <!-- React -->
+            <section>
+                <h2>React とは？</h2>
+                <p><span class="highlight">UIを作るためのJavaScriptライブラリ</span></p>
+                <p class="fragment">Meta(旧Facebook)が開発</p>
+            </section>
+
+            <section>
+                <h2>React の特徴</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>コンポーネント指向</h3>
+                        <p class="small-text">UI部品を組み合わせて画面を作る</p>
+                        <pre><code class="language-jsx">function Button() {
+  return &lt;button&gt;クリック&lt;/button&gt;
+}
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;Button /&gt;
+      &lt;Button /&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                    </div>
+                    <div class="fragment">
+                        <h3>状態管理</h3>
+                        <p class="small-text">データが変わると自動で再描画</p>
+                        <pre><code class="language-jsx">function Counter() {
+  const [count, setCount] = useState(0)
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+        増やす
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>React コンポーネントの再利用</h2>
+                <div class="mermaid">
+                    <pre>
+graph LR
+    A[App] --> B[Header]
+    A --> C[TodoList]
+    A --> D[Footer]
+    C --> E[TodoItem]
+    C --> F[TodoItem]
+    C --> G[TodoItem]
+
+    style A fill:#61dafb
+    style B fill:#e1f5ff
+    style C fill:#e1f5ff
+    style D fill:#e1f5ff
+    style E fill:#fff4e1
+    style F fill:#fff4e1
+    style G fill:#fff4e1
+                    </pre>
+                </div>
+                <p class="small-text">小さなコンポーネントを組み合わせて、大きなアプリを作る</p>
+            </section>
+
+            <!-- Next.js -->
+            <section>
+                <h2>Next.js とは？</h2>
+                <p><span class="highlight">Reactのフレームワーク</span></p>
+                <p class="fragment">React + 便利な機能がセットになったもの</p>
+            </section>
+
+            <section>
+                <h2>Next.js が提供する機能</h2>
+                <div class="box">
+                    <ul style="text-align: left;">
+                        <li><strong>ルーティング</strong><br>ファイルベースでページを作成</li>
+                        <li><strong>サーバーサイドレンダリング(SSR)</strong><br>初回表示が高速</li>
+                        <li><strong>API Routes</strong><br>Next.js内でAPIも作れる</li>
+                        <li><strong>最適化</strong><br>画像・フォント・コードの自動最適化</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>Next.js のフォルダ構造</h2>
+                <pre><code class="language-plaintext">app/
+├── page.tsx          → / (トップページ)
+├── login/
+│   └── page.tsx      → /login (ログインページ)
+└── todos/
+    └── page.tsx      → /todos (Todoページ)
+</code></pre>
+                <p class="fragment small-text">フォルダ構造がそのままURLになる！</p>
+            </section>
+
+            <!-- Hono -->
+            <section>
+                <h2>Hono とは？</h2>
+                <p><span class="highlight">超高速・軽量なWebフレームワーク</span></p>
+                <p class="fragment">Node.js、Deno、Cloudflare Workers など様々な環境で動く</p>
+            </section>
+
+            <section>
+                <h2>Hono の特徴</h2>
+                <div class="box">
+                    <ul style="text-align: left;">
+                        <li><strong>シンプル</strong><br>最小限のコードでAPIが作れる</li>
+                        <li><strong>高速</strong><br>パフォーマンスが非常に良い</li>
+                        <li><strong>TypeScript完全対応</strong><br>型安全にAPIを開発できる</li>
+                        <li><strong>軽量</strong><br>依存関係が少なく、バンドルサイズが小さい</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>Hono のコード例</h2>
+                <pre><code class="language-typescript">import { Hono } from 'hono'
+
+const app = new Hono()
+
+// GET /api/todos
+app.get('/api/todos', async (c) => {
+  const todos = await db.query('SELECT * FROM todos')
+  return c.json(todos)
+})
+
+// POST /api/todos
+app.post('/api/todos', async (c) => {
+  const body = await c.req.json()
+  const todo = await db.insert('todos', body)
+  return c.json(todo, 201)
+})
+
+export default app
+</code></pre>
+                <p class="small-text">シンプルで読みやすい！</p>
+            </section>
+
+            <!-- データベース -->
+            <section>
+                <h2>データベース(DB)とは？</h2>
+                <p><span class="highlight">データを整理して保存する専用のプログラム</span></p>
+                <div class="fragment">
+                    <p>レストランで例えると...</p>
+                    <p class="highlight">食材や在庫を管理する冷蔵庫・倉庫</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>PostgreSQL</h2>
+                <p>このプロジェクトで使用するデータベース</p>
+                <div class="box fragment">
+                    <p><strong>リレーショナルデータベース(RDB)</strong></p>
+                    <p class="small-text">テーブル(表)形式でデータを保存</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>テーブルの例: users</h2>
+                <table style="width: 80%; margin: auto; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #42affa;">
+                            <th style="padding: 10px; border: 1px solid #666;">id</th>
+                            <th style="padding: 10px; border: 1px solid #666;">email</th>
+                            <th style="padding: 10px; border: 1px solid #666;">name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #666;">1</td>
+                            <td style="padding: 10px; border: 1px solid #666;">test@example.com</td>
+                            <td style="padding: 10px; border: 1px solid #666;">山田太郎</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #666;">2</td>
+                            <td style="padding: 10px; border: 1px solid #666;">user@example.com</td>
+                            <td style="padding: 10px; border: 1px solid #666;">佐藤花子</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>テーブルの例: todos</h2>
+                <table style="width: 90%; margin: auto; border-collapse: collapse; font-size: 0.9em;">
+                    <thead>
+                        <tr style="background: #42affa;">
+                            <th style="padding: 8px; border: 1px solid #666;">id</th>
+                            <th style="padding: 8px; border: 1px solid #666;">user_id</th>
+                            <th style="padding: 8px; border: 1px solid #666;">title</th>
+                            <th style="padding: 8px; border: 1px solid #666;">completed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #666;">1</td>
+                            <td style="padding: 8px; border: 1px solid #666;">1</td>
+                            <td style="padding: 8px; border: 1px solid #666;">牛乳を買う</td>
+                            <td style="padding: 8px; border: 1px solid #666;">false</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #666;">2</td>
+                            <td style="padding: 8px; border: 1px solid #666;">1</td>
+                            <td style="padding: 8px; border: 1px solid #666;">宿題をする</td>
+                            <td style="padding: 8px; border: 1px solid #666;">true</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>データの流れ</h2>
+                <div class="mermaid">
+                    <pre>
+sequenceDiagram
+    participant U as ユーザー
+    participant F as フロントエンド<br/>(Next.js)
+    participant B as バックエンド<br/>(Hono)
+    participant D as データベース<br/>(PostgreSQL)
+
+    U->>F: Todoページを開く
+    F->>B: GET /api/todos
+    B->>D: SELECT * FROM todos
+    D->>B: [データ]
+    B->>F: JSON レスポンス
+    F->>U: Todo一覧を表示
+                    </pre>
+                </div>
+            </section>
+
+            <!-- JWT認証 -->
+            <section>
+                <h2>JWT認証とは？</h2>
+                <p><span class="highlight">JSON Web Token</span></p>
+                <p class="fragment">ユーザーを安全に認証するための仕組み</p>
+            </section>
+
+            <section>
+                <h2>JWT の仕組み</h2>
+                <div class="box">
+                    <p><strong>トークン = 身分証明書のようなもの</strong></p>
+                    <p class="small-text">一度ログインすれば、そのトークンを使って<br>「私は〇〇さんです」と証明できる</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>JWT認証フロー</h2>
+                <div class="mermaid">
+                    <pre>
+sequenceDiagram
+    participant U as ユーザー
+    participant F as フロントエンド
+    participant B as バックエンド
+    participant D as DB
+
+    U->>F: メール・パスワードを入力
+    F->>B: POST /api/auth/login
+    B->>D: ユーザー確認
+    D->>B: ユーザー情報
+    B->>B: JWTトークン生成
+    B->>F: トークンを返す
+    F->>F: トークンを保存<br/>(localStorage)
+
+    Note over F,B: 以降のリクエスト
+
+    F->>B: GET /api/todos<br/>(Header: Authorization: Bearer トークン)
+    B->>B: トークン検証
+    B->>D: データ取得
+    D->>B: データ
+    B->>F: レスポンス
+                    </pre>
+                </div>
+            </section>
+
+            <section>
+                <h2>JWT トークンの中身</h2>
+                <pre><code class="language-plaintext">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJzdWIiOjEsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSJ9.
+vz0uGDqwoIf2zxpm7pUGRclV2yOeYQnWp5PJaYzJKqg
+</code></pre>
+                <div class="fragment">
+                    <p class="small-text">3つの部分に分かれている:</p>
+                    <ul class="small-text" style="text-align: left; margin: 20px auto; max-width: 600px;">
+                        <li><strong>ヘッダー</strong>: アルゴリズム情報</li>
+                        <li><strong>ペイロード</strong>: ユーザー情報(ID、メールなど)</li>
+                        <li><strong>署名</strong>: 改ざん防止用</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>JWT のメリット</h2>
+                <div class="box">
+                    <ul style="text-align: left;">
+                        <li><strong>ステートレス</strong><br>サーバーでセッション情報を持たなくていい</li>
+                        <li><strong>スケーラブル</strong><br>複数のサーバーで簡単に認証できる</li>
+                        <li><strong>安全</strong><br>署名により改ざんを検出できる</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- TypeScript -->
+            <section>
+                <h2>TypeScript とは？</h2>
+                <p><span class="highlight">JavaScriptに型を追加した言語</span></p>
+                <p class="fragment">Microsoft が開発</p>
+            </section>
+
+            <section>
+                <h2>JavaScript の問題点</h2>
+                <pre><code class="language-javascript">// JavaScriptの例
+function add(a, b) {
+  return a + b;
+}
+
+add(1, 2);        // 3 OK
+add("1", "2");    // "12" えっ？文字列になる
+add(1, "2");      // "12" バグの原因に...
+</code></pre>
+                <p class="fragment">型がないので、実行するまでエラーに気づけない</p>
+            </section>
+
+            <section>
+                <h2>TypeScript の解決策</h2>
+                <pre><code class="language-typescript">// TypeScriptの例
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+add(1, 2);        // 3 OK
+add("1", "2");    // エラー！コンパイル時に検出
+add(1, "2");      // エラー！コンパイル時に検出
+</code></pre>
+                <p class="fragment">型を指定することで、<span class="highlight">バグを事前に防げる</span></p>
+            </section>
+
+            <section>
+                <h2>TypeScript の特徴</h2>
+                <div class="box">
+                    <ul style="text-align: left;">
+                        <li><strong>型安全</strong><br>コンパイル時にエラーを検出</li>
+                        <li><strong>エディタサポート</strong><br>自動補完・リファクタリング</li>
+                        <li><strong>ドキュメント代わり</strong><br>型定義がドキュメントになる</li>
+                        <li><strong>JavaScript互換</strong><br>既存のJSコードも使える</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>型定義の例</h2>
+                <pre><code class="language-typescript">// Todoの型定義
+type Todo = {
+  id: number;
+  title: string;
+  description: string | null;
+  completed: boolean;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+};
+
+// 使い方
+const todo: Todo = {
+  id: 1,
+  title: "牛乳を買う",
+  description: null,
+  completed: false,
+  user_id: 1,
+  created_at: "2024-01-01",
+  updated_at: "2024-01-01"
+};
+</code></pre>
+            </section>
+
+            <!-- Docker -->
+            <section>
+                <h2>Docker とは？</h2>
+                <p><span class="highlight">アプリケーションをコンテナという箱に入れて動かす技術</span></p>
+            </section>
+
+            <section>
+                <h2>Docker がない場合の問題</h2>
+                <ul>
+                    <li>「私の環境では動くのに...」</li>
+                    <li>セットアップが大変</li>
+                    <li>バージョン違いでエラー</li>
+                    <li>他の人と環境を揃えにくい</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Docker コンテナ</h2>
+                <div class="mermaid">
+                    <pre>
+graph LR
+    subgraph Docker["Docker Engine"]
+        C1["コンテナ1:<br/>PostgreSQL"]
+        C2["コンテナ2:<br/>Hono API<br/>Node.js"]
+        C3["コンテナ3:<br/>Next.js<br/>Node.js"]
+    end
+
+    style C1 fill:#ffe1f5
+    style C2 fill:#fff4e1
+    style C3 fill:#e1f5ff
+                    </pre>
+                </div>
+                <p class="small-text">各コンテナは独立した環境で動作</p>
+            </section>
+
+            <section>
+                <h2>Docker の利点</h2>
+                <div class="box">
+                    <ul style="text-align: left;">
+                        <li><strong>環境の統一</strong><br>誰でも同じ環境で開発できる</li>
+                        <li><strong>簡単なセットアップ</strong><br><code>docker compose up</code> だけ</li>
+                        <li><strong>クリーンな環境</strong><br>PCを汚さない</li>
+                        <li><strong>複数バージョン共存</strong><br>プロジェクトごとに違うバージョンOK</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Git -->
+            <section>
+                <h2>Git とは？</h2>
+                <p><span class="highlight">バージョン管理システム</span></p>
+                <p class="fragment">コードの変更履歴を記録・管理するツール</p>
+            </section>
+
+            <section>
+                <h2>Git がない場合の問題</h2>
+                <ul>
+                    <li>ファイル名が増える<br><code>app_最終版.js</code><br><code>app_最終版2.js</code><br><code>app_本当に最終版.js</code></li>
+                    <li>いつ・誰が・何を変更したか不明</li>
+                    <li>昔のバージョンに戻せない</li>
+                    <li>チームでの開発が困難</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Git の流れ</h2>
+                <div class="mermaid">
+                    <pre>
+graph LR
+    A[作業ディレクトリ<br/>Working Directory] -->|git add| B[ステージング<br/>Staging Area]
+    B -->|git commit| C[ローカルリポジトリ<br/>Local Repository]
+    C -->|git push| D[リモートリポジトリ<br/>GitHub]
+
+    style A fill:#e1f5ff
+    style B fill:#fff4e1
+    style C fill:#ffe1f5
+    style D fill:#e1ffe1
+                    </pre>
+                </div>
+            </section>
+
+            <section>
+                <h2>基本的な Git コマンド</h2>
+                <div class="box">
+                    <pre><code class="language-bash">git status              # 現在の状態を確認
+git add ファイル名       # 変更をステージングに追加
+git commit -m "メッセージ"  # 変更を記録
+git push                # リモートに送信
+git pull                # リモートから取得
+</code></pre>
+                </div>
+            </section>
+
+            <section>
+                <h2>Git ブランチ</h2>
+                <div class="mermaid">
+                    <pre>
+gitGraph
+    commit
+    commit
+    branch feature
+    checkout feature
+    commit
+    commit
+    commit
+    checkout main
+    merge feature
+    commit
+                    </pre>
+                </div>
+                <p class="small-text">複数の機能を並行開発できる</p>
+            </section>
+
+            <!-- GitHub Flow -->
+            <section>
+                <h2>GitHub Flow - 開発フロー</h2>
+                <div class="mermaid">
+                    <pre>
+graph LR
+    A[1. Issue作成] --> B[2. Branch作成]
+    B --> C[3. コード編集]
+    C --> D[4. Commit]
+    D --> E[5. Push]
+    E --> F[6. Pull Request]
+    F --> G[7. レビュー]
+    G --> H{OK?}
+    H -->|修正| C
+    H -->|承認| I[8. Merge]
+
+    style A fill:#e1f5ff
+    style F fill:#fff4e1
+    style G fill:#ffe1f5
+    style I fill:#e1ffe1
+                    </pre>
+                </div>
+                <p class="small-text">Issue → Branch → Code → Commit → Push → PR → Review → Merge</p>
+            </section>
+
+            <!-- Issueとは -->
+            <section>
+                <h2>Issue とは？</h2>
+                <p><span class="highlight">タスクやバグを管理する仕組み</span></p>
+                <div class="box fragment">
+                    <p>Issueで管理するもの:</p>
+                    <ul style="text-align: left;">
+                        <li>新機能の提案</li>
+                        <li>バグ報告</li>
+                        <li>改善案</li>
+                        <li>質問・議論</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>Issue の作成</h2>
+                <pre><code class="language-bash"># GitHubのWebUIで作成、または
+gh issue create --title "ToDoの削除機能を追加" \
+  --body "削除ボタンをクリックしたらToDoを削除できるようにする"
+</code></pre>
+                <div class="fragment">
+                    <p class="small-text">Issueには番号が振られる (例: #1, #2, #3...)</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>Issue の例</h2>
+                <div class="box">
+                    <p style="text-align: left;"><strong>Issue #12: ToDoの削除機能を追加</strong></p>
+                    <div style="text-align: left; font-size: 0.8em;">
+                        <p><strong>説明:</strong></p>
+                        <p>現在、ToDoを削除する機能がありません。<br>
+                        ユーザーがToDoを削除できるようにしたいです。</p>
+                        <p><strong>実装内容:</strong></p>
+                        <ul>
+                            <li>削除ボタンの追加</li>
+                            <li>DELETE /api/todos/:id のAPI呼び出し</li>
+                            <li>削除後に一覧を更新</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ブランチを切る -->
+            <section>
+                <h2>ブランチを切る</h2>
+                <p>新しい機能は新しいブランチで開発</p>
+                <pre><code class="language-bash"># mainブランチを最新にする
+git checkout main
+git pull
+
+# 新しいブランチを作成して切り替え
+git checkout -b feature/delete-todo
+
+# ブランチ名の例:
+# - feature/機能名 (新機能)
+# - fix/バグ名 (バグ修正)
+# - docs/ドキュメント名 (ドキュメント)
+</code></pre>
+            </section>
+
+            <section>
+                <h2>コードを編集してコミット</h2>
+                <pre><code class="language-bash"># ファイルを編集...
+
+# 変更を確認
+git status
+
+# 変更をステージング
+git add app/todos/page.tsx
+
+# コミット (Issueの番号を含める)
+git commit -m "feat: ToDoの削除機能を追加 #12"
+
+# リモートにプッシュ
+git push origin feature/delete-todo
+</code></pre>
+            </section>
+
+            <!-- Pull Request -->
+            <section>
+                <h2>Pull Request (PR) とは？</h2>
+                <p><span class="highlight">コードをレビューしてもらうための仕組み</span></p>
+                <div class="box fragment">
+                    <p>PRの目的:</p>
+                    <ul style="text-align: left;">
+                        <li>コードレビューを依頼</li>
+                        <li>変更内容を共有</li>
+                        <li>テストの実行</li>
+                        <li>mainブランチへの統合準備</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>PR の作成</h2>
+                <pre><code class="language-bash"># GitHubのWebUIで作成、または
+gh pr create \
+  --title "ToDoの削除機能を追加" \
+  --body "Close #12
+
+## 変更内容
+- 削除ボタンを追加
+- DELETE APIを呼び出す処理を実装
+- 削除後に一覧を更新
+
+## テスト方法
+1. ToDoを作成
+2. 削除ボタンをクリック
+3. ToDoが削除されることを確認"
+</code></pre>
+                <p class="fragment small-text"><code>Close #12</code> でIssueと紐づけられる</p>
+            </section>
+
+            <section>
+                <h2>PR の構成</h2>
+                <div style="font-size: 0.85em;">
+                    <div class="box" style="text-align: left;">
+                        <p><strong>📝 Pull Request #15: ToDoの削除機能を追加</strong></p>
+                        <ul style="font-size: 0.9em;">
+                            <li><strong>タイトル・説明</strong>: 何を変更したか</li>
+                            <li><strong>変更したコード (Diff)</strong>: 追加・削除された行</li>
+                            <li><strong>コミット履歴</strong>: どう実装したか</li>
+                            <li><strong>レビュアー</strong>: 誰に見てもらうか</li>
+                            <li><strong>関連Issue</strong>: Close #12</li>
+                            <li><strong>テスト結果</strong>: CI/CDで自動テスト</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- コードレビュー -->
+            <section>
+                <h2>コードレビュー</h2>
+                <p>チームメンバーがコードを確認</p>
+                <div class="two-columns">
+                    <div>
+                        <h3>レビュアー</h3>
+                        <ul class="small-text" style="text-align: left;">
+                            <li>コードを読む</li>
+                            <li>バグがないか確認</li>
+                            <li>改善点を提案</li>
+                            <li>Approve or Request Changes</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>作成者</h3>
+                        <ul class="small-text" style="text-align: left;">
+                            <li>コメントに返信</li>
+                            <li>指摘を修正</li>
+                            <li>追加コミット</li>
+                            <li>再レビュー依頼</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>レビューコメントの例</h2>
+                <div class="box" style="text-align: left; font-size: 0.8em;">
+                    <p><strong>レビュアー:</strong></p>
+                    <p style="background: #3f3f3f; padding: 10px; border-radius: 5px;">
+                        削除する前に確認ダイアログを表示した方が<br>
+                        ユーザーにとって親切だと思います。<br>
+                        <code>window.confirm()</code> を使ってはどうでしょうか？
+                    </p>
+                    <p class="fragment"><strong>作成者:</strong></p>
+                    <p class="fragment" style="background: #3f3f3f; padding: 10px; border-radius: 5px;">
+                        ご指摘ありがとうございます！<br>
+                        確認ダイアログを追加しました。
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <h2>レビュー承認後</h2>
+                <pre><code class="language-bash"># レビュー承認されたらマージ
+# GitHubのWebUIで "Merge pull request" をクリック
+
+# または、コマンドで
+gh pr merge 15 --merge
+
+# マージ後、ブランチを削除
+git checkout main
+git pull
+git branch -d feature/delete-todo
+</code></pre>
+                <p class="fragment small-text">PRがマージされると、関連するIssueも自動でクローズ</p>
+            </section>
+
+            <!-- 実際の開発フロー -->
+            <section>
+                <h2>実際の開発フロー (例)</h2>
+                <div style="text-align: left; font-size: 0.7em;">
+                    <p><strong>1. Issue作成</strong></p>
+                    <pre><code>gh issue create --title "ToDoの削除機能" -l enhancement</code></pre>
+
+                    <p class="fragment"><strong>2. ブランチ作成</strong></p>
+                    <pre class="fragment"><code>git checkout -b feature/delete-todo</code></pre>
+
+                    <p class="fragment"><strong>3. 実装・コミット</strong></p>
+                    <pre class="fragment"><code>git commit -m "feat: 削除ボタンを追加 #12"</code></pre>
+
+                    <p class="fragment"><strong>4. Push・PR作成</strong></p>
+                    <pre class="fragment"><code>git push origin feature/delete-todo
+gh pr create --title "ToDoの削除機能" --body "Close #12"</code></pre>
+
+                    <p class="fragment"><strong>5. レビュー・修正・マージ</strong></p>
+                    <pre class="fragment"><code>gh pr merge 15</code></pre>
+                </div>
+            </section>
+
+            <section>
+                <h2>このプロジェクトで実践しよう</h2>
+                <div class="box">
+                    <ul style="text-align: left;">
+                        <li>課題を始める前にIssueを作成</li>
+                        <li>機能ごとにブランチを切る</li>
+                        <li>完成したらPRを作成</li>
+                        <li>自分でレビューしてからマージ</li>
+                    </ul>
+                </div>
+                <p class="fragment small-text">実際のチーム開発と同じフローを体験できます！</p>
+            </section>
+
+            <!-- まとめ -->
+            <section>
+                <h2>このプロジェクトの技術スタック</h2>
+                <div class="two-columns" style="font-size: 0.85em;">
+                    <div>
+                        <div class="box" style="background: #e1f5ff;">
+                            <p><strong>フロントエンド</strong></p>
+                            <p class="small-text">localhost:3001</p>
+                            <ul style="text-align: left; font-size: 0.9em;">
+                                <li>Next.js</li>
+                                <li>React</li>
+                                <li>TypeScript</li>
+                            </ul>
+                        </div>
+                        <div class="box" style="background: #fff4e1;">
+                            <p><strong>バックエンド</strong></p>
+                            <p class="small-text">localhost:3010</p>
+                            <ul style="text-align: left; font-size: 0.9em;">
+                                <li>Hono</li>
+                                <li>Node.js</li>
+                                <li>JWT</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="box" style="background: #ffe1f5;">
+                            <p><strong>データベース</strong></p>
+                            <p class="small-text">localhost:5432</p>
+                            <ul style="text-align: left; font-size: 0.9em;">
+                                <li>PostgreSQL</li>
+                            </ul>
+                        </div>
+                        <div class="box" style="background: #e1ffe1;">
+                            <p><strong>開発ツール</strong></p>
+                            <ul style="text-align: left; font-size: 0.9em;">
+                                <li>Docker</li>
+                                <li>Git / GitHub</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>まとめ</h2>
+                <ul style="font-size: 0.75em;">
+                    <li><strong>Node.js</strong>: JavaScriptの実行環境</li>
+                    <li><strong>React</strong>: UIライブラリ</li>
+                    <li><strong>Next.js</strong>: Reactフレームワーク (フロントエンド)</li>
+                    <li><strong>Hono</strong>: 軽量APIフレームワーク (バックエンド)</li>
+                    <li><strong>PostgreSQL</strong>: データベース</li>
+                    <li><strong>JWT</strong>: 認証の仕組み</li>
+                    <li><strong>TypeScript</strong>: 型安全なJavaScript</li>
+                    <li><strong>Docker</strong>: 環境を統一する技術</li>
+                    <li><strong>Git</strong>: バージョン管理システム</li>
+                </ul>
+            </section>
+
+            <!-- 次のステップ -->
+            <section>
+                <h2>次のステップ</h2>
+                <ol>
+                    <li>プロジェクトを起動してみる<br><code>make up</code></li>
+                    <li>完成版を触ってみる<br>http://localhost:3002</li>
+                    <li>API仕様を見てみる<br>http://localhost:8080</li>
+                    <li>課題に取り組む<br>LEARNING.md を参照</li>
+                </ol>
+            </section>
+
+            <!-- 終わり -->
+            <section>
+                <h1>質問タイム</h1>
+                <p>わからないことがあれば<br>遠慮なく質問してください！</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        // Mermaidの初期化
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            themeVariables: {
+                fontSize: '16px'
+            }
+        });
+
+        // Reveal.jsの初期化
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            plugins: [RevealHighlight],
+            slideNumber: true,
+            progress: true,
+            center: true,
+            width: 1200,
+            height: 700
+        });
+
+        // Mermaidを描画
+        Reveal.on('ready', async () => {
+            // 全てのmermaidダイアグラムを描画
+            const mermaidDivs = document.querySelectorAll('.mermaid');
+            for (let i = 0; i < mermaidDivs.length; i++) {
+                const div = mermaidDivs[i];
+                const pre = div.querySelector('pre');
+                if (pre) {
+                    const code = pre.textContent;
+                    const id = 'mermaid-' + i;
+                    try {
+                        const { svg } = await mermaid.render(id, code);
+                        div.innerHTML = svg;
+                    } catch (e) {
+                        console.error('Mermaid rendering error:', e);
+                    }
+                }
+            }
+        });
+
+        // スライド変更時にも描画（念のため）
+        Reveal.on('slidechanged', async () => {
+            const currentSlide = Reveal.getCurrentSlide();
+            const mermaidDivs = currentSlide.querySelectorAll('.mermaid');
+            for (let i = 0; i < mermaidDivs.length; i++) {
+                const div = mermaidDivs[i];
+                if (div.querySelector('pre')) {
+                    const pre = div.querySelector('pre');
+                    const code = pre.textContent;
+                    const id = 'mermaid-slide-' + Reveal.getIndices().h + '-' + i;
+                    try {
+                        const { svg } = await mermaid.render(id, code);
+                        div.innerHTML = svg;
+                    } catch (e) {
+                        console.error('Mermaid rendering error:', e);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-.PHONY: up down build migrate seed logs clean help select
+.PHONY: up down build migrate seed logs clean help select kill-ports
 .PHONY: up-answer up-starter up-backend up-frontend up-backend-kadai up-frontend-kadai
 .PHONY: logs-answer-backend logs-starter-backend logs-answer-frontend logs-starter-frontend
 
@@ -29,8 +29,20 @@ select:
 		*) echo "❌ 無効な選択です"; exit 1 ;; \
 	esac
 
+# 使用中のポートを解放
+kill-ports:
+	@echo "🔄 使用中のポートを確認・解放中..."
+	@-lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+	@-lsof -ti:3001 | xargs kill -9 2>/dev/null || true
+	@-lsof -ti:3002 | xargs kill -9 2>/dev/null || true
+	@-lsof -ti:3010 | xargs kill -9 2>/dev/null || true
+	@-lsof -ti:5432 | xargs kill -9 2>/dev/null || true
+	@-lsof -ti:8080 | xargs kill -9 2>/dev/null || true
+	@docker compose down 2>/dev/null || true
+	@echo "✅ ポート解放完了"
+
 # すべてのサービスを起動
-up:
+up: kill-ports
 	@echo "🚀 すべてのサービスを起動中..."
 	docker compose up -d
 	@echo "⏳ データベースの起動を待機中..."
@@ -54,7 +66,7 @@ up:
 	@echo ""
 
 # 完成版のみ起動
-up-answer:
+up-answer: kill-ports
 	@echo "🚀 完成版サービスを起動中..."
 	docker compose up -d db swagger answer-backend answer-frontend
 	@echo "⏳ データベースの起動を待機中..."
@@ -72,7 +84,7 @@ up-answer:
 	@echo ""
 
 # 未完成版のみ起動
-up-starter:
+up-starter: kill-ports
 	@echo "🚀 未完成版（課題用）サービスを起動中..."
 	docker compose up -d db swagger starter-backend starter-frontend
 	@echo "⏳ データベースの起動を待機中..."
@@ -90,7 +102,7 @@ up-starter:
 	@echo ""
 
 # バックエンドのみ起動
-up-backend:
+up-backend: kill-ports
 	@echo "🚀 バックエンドサービスを起動中..."
 	docker compose up -d db swagger answer-backend starter-backend
 	@echo "⏳ データベースの起動を待機中..."
@@ -108,7 +120,7 @@ up-backend:
 	@echo ""
 
 # フロントエンドのみ起動
-up-frontend:
+up-frontend: kill-ports
 	@echo "🚀 フロントエンドサービスを起動中..."
 	docker compose up -d answer-frontend starter-frontend
 	@echo "✅ フロントエンドの起動完了！"
@@ -119,7 +131,7 @@ up-frontend:
 	@echo ""
 
 # バックエンド開発課題（完成版フロントエンド + 未完成バックエンド）
-up-backend-kadai:
+up-backend-kadai: kill-ports
 	@echo "🚀 バックエンド開発課題環境を起動中..."
 	docker compose up -d db swagger starter-backend answer-frontend
 	@echo "⏳ データベースの起動を待機中..."
@@ -141,7 +153,7 @@ up-backend-kadai:
 	@echo ""
 
 # フロントエンド開発課題（完成版バックエンド + 未完成フロントエンド）
-up-frontend-kadai:
+up-frontend-kadai: kill-ports
 	@echo "🚀 フロントエンド開発課題環境を起動中..."
 	docker compose up -d db swagger answer-backend starter-frontend
 	@echo "⏳ データベースの起動を待機中..."
@@ -168,7 +180,7 @@ down:
 	docker compose down
 
 # すべてのサービスをビルドして起動
-build:
+build: kill-ports
 	@echo "🔨 すべてのサービスをビルド中..."
 	docker compose up -d --build
 	@echo "⏳ データベースの起動を待機中..."
@@ -241,7 +253,7 @@ status:
 help:
 	@echo "📖 利用可能なコマンド:"
 	@echo ""
-	@echo "🚀 起動コマンド:"
+	@echo "🚀 起動コマンド (自動でポート解放してから起動):"
 	@echo "  make up            - すべてのサービスを起動"
 	@echo "  make up-answer     - 完成版のみ起動"
 	@echo "  make up-starter    - 未完成版（課題用）のみ起動"
@@ -250,6 +262,7 @@ help:
 	@echo ""
 	@echo "🛑 停止・管理:"
 	@echo "  make down          - すべてのサービスを停止"
+	@echo "  make kill-ports    - 使用中のポートを解放"
 	@echo "  make restart       - すべてのサービスを再起動"
 	@echo "  make build         - すべてをビルドして起動"
 	@echo "  make clean         - コンテナとボリュームを削除"
